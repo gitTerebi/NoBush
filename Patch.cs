@@ -43,19 +43,26 @@ namespace NoBushESP
                 Vector3 direction = enemyHeadPosition - headPosition;
                 float distance = direction.magnitude;
 
-                if (Settings.DebugEnabled.Value)
-                    Plugin.LogSource.LogInfo($"Check can shoot {person.Profile.Nickname}");
+                if (Settings.DebugEnabled.Value) Plugin.LogSource.LogInfo($"Check can shoot {person.Profile.Nickname}");
 
                 if (!Physics.Raycast(new Ray(headPosition, direction), out RaycastHit hitInfo, distance, GetLayerMask())) return;
 
                 string objectName = hitInfo.transform.parent?.gameObject?.name?.ToLower();
+                if (Settings.DebugEnabled.Value) Plugin.LogSource.LogInfo($"Raycast check");
+
                 if (exclusionList.Any(exclusion => objectName.Contains(exclusion)))
                 {
-                    if (Settings.DebugEnabled.Value)
-                        Plugin.LogSource.LogInfo($"Shot blocked by exclusion list");
-
+                    // float hitDistance = Vector3.Distance(hitInfo.transform.position, headPosition);
+                    // if (hitDistance > 1)
+                    // {
                     BlockShooting(bot, goalEnemy);
+                    if (Settings.DebugEnabled.Value) Plugin.LogSource.LogInfo($"Shot blocked by exclusion list");
                     return;
+                    // }
+                    // else
+                    // {
+                    // if (Settings.DebugEnabled.Value) Plugin.LogSource.LogInfo($"Shot not blocked because bot is too close");
+                    // }
                 }
 
                 MaterialType materialType = hitInfo.transform.gameObject.GetComponentInParent<BallisticCollider>()?.TypeOfMaterial ?? default;
@@ -89,12 +96,18 @@ namespace NoBushESP
 
         private static void BlockShooting(BotOwner bot, EnemyInfo goalEnemy)
         {
-            ReflectionHelper.SetProperty(goalEnemy, "IsVisible", false);
-            bot.AimingManager.CurrentAiming.LoseTarget();
-            bot.ShootData.EndShoot();
+            try
+            {
+                ReflectionHelper.SetProperty(goalEnemy, "IsVisible", false);
+                bot.AimingManager.CurrentAiming.LoseTarget();
+                bot.ShootData.EndShoot();
 
-            ReflectionHelper.SetProperty(bot.ShootData, "CanShootByState", false);
+                ReflectionHelper.SetProperty(bot.ShootData, "CanShootByState", false);
+            }
+            catch (Exception ex)
+            {
+                Plugin.LogSource.LogError("BlockShooting " + ex.ToString());
+            }
         }
-
     }
 }
