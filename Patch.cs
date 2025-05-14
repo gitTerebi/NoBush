@@ -52,17 +52,17 @@ namespace NoBushESP
 
                 if (exclusionList.Any(exclusion => objectName.Contains(exclusion)))
                 {
-                    // float hitDistance = Vector3.Distance(hitInfo.transform.position, headPosition);
-                    // if (hitDistance > 1)
-                    // {
-                    BlockShooting(bot, goalEnemy);
-                    if (Settings.DebugEnabled.Value) Plugin.LogSource.LogInfo($"Shot blocked by exclusion list");
-                    return;
-                    // }
-                    // else
-                    // {
-                    // if (Settings.DebugEnabled.Value) Plugin.LogSource.LogInfo($"Shot not blocked because bot is too close");
-                    // }
+                    float hitDistance = Vector3.Distance(hitInfo.transform.position, headPosition);
+                    if (hitDistance > 1)
+                    {
+                        BlockShooting(bot, goalEnemy);
+                        if (Settings.DebugEnabled.Value) Plugin.LogSource.LogInfo($"Shot blocked by exclusion list");
+                        return;
+                    }
+                    else
+                    {
+                        if (Settings.DebugEnabled.Value) Plugin.LogSource.LogInfo($"Shot not blocked because bot is too close");
+                    }
                 }
 
                 MaterialType materialType = hitInfo.transform.gameObject.GetComponentInParent<BallisticCollider>()?.TypeOfMaterial ?? default;
