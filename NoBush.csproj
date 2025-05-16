@@ -52,7 +52,7 @@
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="xcopy /y /f &quot;$(TargetPath)&quot; &quot;$(ProjectDir)\Build\BepInEx\plugins\&quot;" />
     <Exec Command="(powershell Compress-Archive -Path '$(ProjectDir)\Build\BepInEx' -DestinationPath '$(ProjectDir)\Build\somtam.NoBush.zip' -Force)"/>
-    <Exec Command="xcopy /y /f &quot;$(TargetPath)&quot; &quot;\\GEM10\spt 3.11\BepInEx\plugins\&quot;" />
+    <Exec Command="xcopy /y /f &quot;$(TargetPath)&quot; &quot;\\GEM10\Games\spt 3.11\BepInEx\plugins\&quot;" />
     <Exec Command="xcopy /y /f &quot;$(TargetPath)&quot; &quot;..\..\BepInEx\plugins\&quot;" />
   </Target>
 

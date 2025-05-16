@@ -43,33 +43,29 @@ namespace NoBushESP
                 Vector3 direction = enemyHeadPosition - headPosition;
                 float distance = direction.magnitude;
 
-                if (Settings.DebugEnabled.Value) Plugin.LogSource.LogInfo($"Check can shoot {person.Profile.Nickname}");
-
                 if (!Physics.Raycast(new Ray(headPosition, direction), out RaycastHit hitInfo, distance, GetLayerMask())) return;
 
                 string objectName = hitInfo.transform.parent?.gameObject?.name?.ToLower();
-                if (Settings.DebugEnabled.Value) Plugin.LogSource.LogInfo($"Raycast check");
+
+                if (objectName == null) return;
+
+                if (Settings.DebugEnabled.Value) Plugin.LogSource.LogInfo($"Raycast check {objectName}");
 
                 if (exclusionList.Any(exclusion => objectName.Contains(exclusion)))
                 {
-                    float hitDistance = Vector3.Distance(hitInfo.transform.position, headPosition);
-                    if (hitDistance > 1)
-                    {
-                        BlockShooting(bot, goalEnemy);
-                        if (Settings.DebugEnabled.Value) Plugin.LogSource.LogInfo($"Shot blocked by exclusion list");
-                        return;
-                    }
-                    else
-                    {
-                        if (Settings.DebugEnabled.Value) Plugin.LogSource.LogInfo($"Shot not blocked because bot is too close");
-                    }
+                    BlockShooting(bot, goalEnemy);
+                    if (Settings.DebugEnabled.Value) Plugin.LogSource.LogInfo($"Shot blocked by {objectName}");
+                    return;
                 }
 
                 MaterialType materialType = hitInfo.transform.gameObject.GetComponentInParent<BallisticCollider>()?.TypeOfMaterial ?? default;
+
+                if (Settings.DebugEnabled.Value) Plugin.LogSource.LogInfo($"Raycast check material {materialType}");
+
                 if (IsMaterialBlockingShot(materialType, hitInfo.transform.position, headPosition))
                 {
                     if (Settings.DebugEnabled.Value)
-                        Plugin.LogSource.LogInfo($"Shot blocked by material");
+                        Plugin.LogSource.LogInfo($"Shot blocked by {materialType}");
 
                     BlockShooting(bot, goalEnemy);
                 }
